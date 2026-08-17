@@ -1,0 +1,5 @@
+{
+  "version": 2,
+  "buildCommand": "prisma migrate deploy --schema prisma/prod/schema.prisma && prisma generate --schema prisma/prod/schema.prisma",
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+}

@@ -35,6 +35,14 @@ module.exports = {
     url: process.env.DATABASE_URL,
   },
 
+  download: {
+    // Maximum uploaded build size in MB (see also Vercel's function body limits).
+    maxMb: parseInt(process.env.DOWNLOAD_MAX_MB, 10) || 50,
+    get maxBytes() {
+      return this.maxMb * 1024 * 1024;
+    },
+  },
+
   discord: {
     clientId: process.env.DISCORD_CLIENT_ID,
     clientSecret: process.env.DISCORD_CLIENT_SECRET,

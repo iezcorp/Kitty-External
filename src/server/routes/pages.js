@@ -1,12 +1,10 @@
 const express = require('express');
-const path = require('path');
-const fs = require('fs');
 const { requireUser } = require('../middleware/auth');
 const updateService = require('../services/updateService');
+const downloadService = require('../services/downloadService');
 const featureData = require('../../config/features');
 
 const router = express.Router();
-const downloadDir = path.join(__dirname, '../../../download');
 
 router.get('/', async (req, res, next) => {
   try {
@@ -54,20 +52,15 @@ router.get('/account', requireUser, (req, res) => {
   });
 });
 
-// Serves the zip from /download as an instant file download (logged-in users only).
-router.get('/download', requireUser, (req, res, next) => {
+// Serves the newest uploaded zip as an instant file download (logged-in users only).
+router.get('/download', requireUser, async (req, res, next) => {
   try {
-    const files = fs.existsSync(downloadDir)
-      ? fs.readdirSync(downloadDir).filter((f) => f.toLowerCase().endsWith('.zip'))
-      : [];
-    if (files.length === 0) {
+    const file = await downloadService.currentFile();
+    if (!file) {
       return res.status(404).render('errors/404', { title: 'Download Not Found' });
     }
-    // If multiple zips exist, use the most recently modified one.
-    const target = files
-      .map((f) => ({ f, mtime: fs.statSync(path.join(downloadDir, f)).mtimeMs }))
-      .sort((a, b) => b.mtime - a.mtime)[0].f;
-    res.download(path.join(downloadDir, target));
+    res.attachment(file.name);
+    res.send(file.data);
   } catch (err) {
     next(err);
   }

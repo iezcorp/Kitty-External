@@ -1,46 +1,44 @@
-const path = require('path');
-const fs = require('fs');
+const prisma = require('../../database/prisma');
 
-const downloadDir = path.join(__dirname, '../../../download');
+/**
+ * Download files are stored in the database (BLOB/bytea) instead of the
+ * filesystem so they persist in production: Vercel's filesystem is ephemeral,
+ * and SQLite local dev / Postgres production both support binary columns.
+ */
 
-/** Returns every .zip in the download folder with size/mtime meta. */
+/** Returns every uploaded download, newest first (no binary payloads). */
 function listFiles() {
-  if (!fs.existsSync(downloadDir)) return [];
-  return fs
-    .readdirSync(downloadDir)
-    .filter((f) => f.toLowerCase().endsWith('.zip'))
-    .map((f) => {
-      const stat = fs.statSync(path.join(downloadDir, f));
-      return { name: f, size: stat.size, mtimeMs: stat.mtimeMs, mtime: stat.mtime };
-    })
-    .sort((a, b) => b.mtimeMs - a.mtimeMs);
+  return prisma.file.findMany({
+    orderBy: { createdAt: 'desc' },
+    select: { id: true, name: true, size: true, createdAt: true },
+  });
 }
 
-/** Returns the file the public /download route serves (most recently uploaded). */
+/** Returns the file the public /download route serves (most recent upload). */
 function currentFile() {
-  const files = listFiles();
-  return files.length > 0 ? files[0] : null;
+  return prisma.file.findFirst({ orderBy: { createdAt: 'desc' } });
 }
 
-/** Copies an uploaded file (multer) into the download folder. */
-function saveUploadedZip(file) {
-  if (!file) throw new Error('No file provided.');
-  const name = path.basename(file.originalname || 'download.zip');
-  const dest = path.join(downloadDir, name);
-  fs.mkdirSync(downloadDir, { recursive: true });
-  fs.copyFileSync(file.path, dest);
-  fs.unlinkSync(file.path); // clear multer temp file
-  return listFiles().find((f) => f.name === name);
+/**
+ * Stores an uploaded file (multer memory upload: { originalname, buffer }).
+ * Re-uploading a file with the same name replaces the previous version.
+ */
+async function saveUploadedZip(file) {
+  if (!file || !file.buffer) throw new Error('No file provided.');
+  const name = (file.originalname || 'download.zip').trim();
+  const size = file.buffer.length;
+
+  const existing = await prisma.file.findUnique({ where: { name } });
+  if (existing) {
+    return prisma.file.update({ where: { name }, data: { size, data: file.buffer } });
+  }
+  return prisma.file.create({ data: { name, size, data: file.buffer } });
 }
 
-/** Deletes a zip by name. Only accepts plain .zip filenames (no paths). */
-function deleteZip(name) {
-  const safe = path.basename(name || '');
-  if (!safe.toLowerCase().endsWith('.zip')) return false;
-  const target = path.join(downloadDir, safe);
-  if (!fs.existsSync(target)) return false;
-  fs.unlinkSync(target);
-  return true;
+/** Deletes an uploaded file by name. */
+async function deleteZip(name) {
+  const result = await prisma.file.deleteMany({ where: { name: name || '' } });
+  return result.count > 0;
 }
 
 module.exports = { listFiles, currentFile, saveUploadedZip, deleteZip };

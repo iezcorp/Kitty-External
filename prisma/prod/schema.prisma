@@ -1,14 +1,16 @@
-// Kitty — Prisma schema
-// Default datasource is SQLite for zero-config local/dev use.
-// Swap "provider" to "postgresql" and point DATABASE_URL at a Postgres
-// instance for production if you'd prefer Postgres over SQLite.
+// Kitty — production (Vercel) Prisma schema.
+// Vercel's filesystem is ephemeral, so production uses PostgreSQL (e.g. Neon
+// or Supabase free tier). The deployed build command runs:
+//   prisma generate --schema prisma/prod/schema.prisma
+//   prisma migrate deploy --schema prisma/prod/schema.prisma
+// Local development keeps using prisma/schema.prisma (SQLite).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

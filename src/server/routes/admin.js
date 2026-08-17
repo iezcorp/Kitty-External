@@ -1,11 +1,11 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 const { body, validationResult } = require('express-validator');
 const { requireAdmin } = require('../middleware/auth');
 const updateService = require('../services/updateService');
 const downloadService = require('../services/downloadService');
+const config = require('../../config');
 const prisma = require('../../database/prisma');
 
 const router = express.Router();
@@ -14,14 +14,11 @@ const router = express.Router();
 // server-side regardless of how the URL was reached.
 router.use(requireAdmin);
 
-const uploadsTempDir = path.join(__dirname, '../../../data/tmp-uploads');
-fs.mkdirSync(uploadsTempDir, { recursive: true });
-
-// Handles zip uploads into the download folder. Files are accepted by
-// extension only (admin-only endpoint, size-capped).
+// Zip uploads are held in memory and stored in the database (works locally
+// on SQLite and in production on Postgres — no writable disk needed).
 const upload = multer({
-  storage: multer.diskStorage({ destination: uploadsTempDir }),
-  limits: { fileSize: 250 * 1024 * 1024 },
+  storage: multer.memoryStorage(),
+  limits: { fileSize: config.download.maxBytes },
   fileFilter: (req, file, cb) => {
     if (path.extname(file.originalname || '').toLowerCase() === '.zip') cb(null, true);
     else cb(new Error('Only .zip files are allowed.'));
@@ -199,15 +196,19 @@ router.post('/updates/:id/delete', async (req, res, next) => {
 
 // --- Downloads Manager ---
 
-router.get('/downloads', (req, res) => {
-  const files = downloadService.listFiles();
-  res.render('admin/downloads', {
-    title: 'Manage Downloads · Kitty',
-    files,
-    current: files.length > 0 ? files[0].name : null,
-    message: req.query.uploaded === '1' ? 'File uploaded. Users now download it instantly.' : null,
-    error: req.query.error === '1' ? 'Upload failed. Only .zip files up to 250MB are allowed.' : null,
-  });
+router.get('/downloads', async (req, res, next) => {
+  try {
+    const files = await downloadService.listFiles();
+    res.render('admin/downloads', {
+      title: 'Manage Downloads · Kitty',
+      files,
+      current: files.length > 0 ? files[0].name : null,
+      message: req.query.uploaded === '1' ? 'File uploaded. Users now download it instantly.' : null,
+      error: req.query.error === '1' ? 'Upload failed. Only .zip files are allowed.' : null,
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.post('/downloads/upload', upload.single('file'), async (req, res, next) => {
@@ -230,7 +231,7 @@ router.post('/downloads/upload', upload.single('file'), async (req, res, next) =
 router.post('/downloads/:name/delete', async (req, res, next) => {
   try {
     const name = path.basename(req.params.name || '');
-    if (!downloadService.deleteZip(name)) {
+    if (!(await downloadService.deleteZip(name))) {
       return res.redirect('/admin/downloads?error=1');
     }
 
