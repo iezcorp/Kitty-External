@@ -88,8 +88,6 @@ app.use('/api', apiRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-app.listen(config.port, () => {
-  logger.info(`Kitty is running at ${config.baseUrl} (port ${config.port})`);
-});
+module.exports = app;
 
 module.exports = app;
