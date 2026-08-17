@@ -1,0 +1,19 @@
+<aside class="admin-sidebar">
+  <a href="/admin" class="admin-sidebar-link <%= typeof activeSection !== 'undefined' && activeSection === 'overview' ? 'active' : '' %>">
+    <%- include('./icon', { name: 'home', size: 16 }) %> Overview
+  </a>
+  <a href="/admin/updates" class="admin-sidebar-link <%= typeof activeSection !== 'undefined' && activeSection === 'updates' ? 'active' : '' %>">
+    <%- include('./icon', { name: 'radio', size: 16 }) %> Updates
+  </a>
+  <a href="/admin/users" class="admin-sidebar-link <%= typeof activeSection !== 'undefined' && activeSection === 'users' ? 'active' : '' %>">
+    <%- include('./icon', { name: 'users', size: 16 }) %> Users
+  </a>
+  <a href="/admin/downloads" class="admin-sidebar-link <%= typeof activeSection !== 'undefined' && activeSection === 'downloads' ? 'active' : '' %>">
+    <%- include('./icon', { name: 'download', size: 16 }) %> Downloads
+  </a>
+  <form action="/admin/logout" method="POST" data-loading-text="Signing out...">
+    <button type="submit" class="admin-sidebar-link" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:inherit;">
+      <%- include('./icon', { name: 'logout', size: 16 }) %> Logout
+    </button>
+  </form>
+</aside>

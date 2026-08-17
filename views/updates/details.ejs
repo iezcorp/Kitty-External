@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav', { activePage: 'updates' }) %>
+
+  <main>
+    <div class="details-shell">
+      <a href="/updates" class="btn btn-ghost btn-sm" style="margin-bottom:24px;">&larr; Back to Live Updates</a>
+
+      <div class="details-header">
+        <span class="update-version-badge">Kitty v<%= update.version %></span>
+        <h1><%= update.title %></h1>
+        <div class="details-meta">
+          <span>Released <%= new Date(update.publishedAt || update.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+          <% if (update.robloxVersion) { %><span>Roblox Version: <%= update.robloxVersion %></span><% } %>
+        </div>
+      </div>
+
+      <% if (update.imageUrl) { %>
+        <img src="<%= update.imageUrl %>" alt="" style="width:100%;border-radius:var(--radius-md);border:1px solid var(--border);margin-bottom:32px;" />
+      <% } %>
+
+      <% if (update.changes && update.changes.length > 0) { %>
+        <div class="details-section">
+          <h2>What Changed</h2>
+          <div class="change-list">
+            <% update.changes.forEach(change => { %>
+              <div class="change-item"><span><%= change %></span></div>
+            <% }) %>
+          </div>
+        </div>
+      <% } %>
+
+      <div class="details-section">
+        <h2>Description</h2>
+        <p><%= update.description %></p>
+      </div>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <%- include('../partials/toast-container') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

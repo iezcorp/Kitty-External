@@ -1,0 +1,67 @@
+// Kitty — Prisma schema
+// Default datasource is SQLite for zero-config local/dev use.
+// Swap "provider" to "postgresql" and point DATABASE_URL at a Postgres
+// instance for production if you'd prefer Postgres over SQLite.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  discordId     String   @unique
+  username      String
+  discriminator String?
+  displayName   String
+  avatar        String?
+  verified      Boolean  @default(false)
+  disabled      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  lastLoginAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([discordId])
+}
+
+model Update {
+  id               String   @id @default(cuid())
+  title            String
+  version          String
+  robloxVersion    String?
+  shortDescription String
+  description      String
+  changes          String // JSON-encoded string array of change lines
+  imageUrl         String?
+  published        Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  publishedAt      DateTime?
+
+  @@index([published, createdAt])
+}
+
+model AdminLoginAttempt {
+  id        String   @id @default(cuid())
+  username  String
+  success   Boolean
+  ipAddress String
+  createdAt DateTime @default(now())
+
+  @@index([username, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actor     String // e.g. "admin:Iez" or "user:<discordId>"
+  action    String // e.g. "update.publish", "user.disable"
+  target    String? // id of the affected resource
+  metadata  String? // JSON-encoded extra context
+  createdAt DateTime @default(now())
+
+  @@index([actor, createdAt])
+}

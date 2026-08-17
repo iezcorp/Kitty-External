@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav', { activePage: 'account' }) %>
+
+  <main>
+    <div class="account-shell">
+      <div class="account-header">
+        <img src="<%= user.avatar %>" alt="" class="account-avatar" />
+        <div>
+          <h1 class="account-name"><%= user.displayName %></h1>
+          <p class="account-username">@<%= user.username %></p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Discord Username</div>
+          <div class="info-value"><%= user.username %></div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Display Name</div>
+          <div class="info-value"><%= user.displayName %></div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Verification Status</div>
+          <div class="info-value">
+            <span class="badge badge-verified"><%- include('../partials/icon', { name: 'check', size: 14 }) %> Verified</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Account Created</div>
+          <div class="info-value"><%= new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) %></div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Last Login</div>
+          <div class="info-value"><%= new Date(user.lastLoginAt).toLocaleString() %></div>
+        </div>
+      </div>
+
+      <form action="/auth/logout" method="POST" data-loading-text="Logging out...">
+        <button type="submit" class="btn btn-secondary">
+          <%- include('../partials/icon', { name: 'logout', size: 16 }) %>
+          <span class="btn-label">Logout</span>
+          <span class="spinner"></span>
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <%- include('../partials/toast-container') %>
+
+  <% if (welcome) { %>
+    <div data-toast data-toast-title="Welcome back" data-toast-body="You're logged in to Kitty." data-toast-type="success" style="display:none"></div>
+  <% } %>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

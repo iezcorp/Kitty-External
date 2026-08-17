@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="error-shell">
+    <div>
+      <div class="error-code">403</div>
+      <h1><%= title || 'Access Denied' %></h1>
+      <p><%= message || "You don't have permission to view this page." %></p>
+      <a href="/" class="btn btn-primary">Back to Home</a>
+    </div>
+  </main>
+  <%- include('../partials/toast-container') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

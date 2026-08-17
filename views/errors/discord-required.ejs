@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-icon"><%- include('../partials/icon', { name: 'discord', size: 24 }) %></div>
+      <h1>Discord Server Required</h1>
+      <p class="sub">You need to join the Kitty Discord server before you can access Kitty.</p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="<%= discordInviteUrl %>" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-block">
+          Join Discord
+        </a>
+        <a href="/auth/discord" class="btn btn-secondary btn-block" data-loading-text="Checking...">
+          <span class="btn-label">Try Again</span>
+          <span class="spinner"></span>
+        </a>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/toast-container') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

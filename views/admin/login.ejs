@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav') %>
+
+  <main class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-icon"><%- include('../partials/icon', { name: 'lock', size: 24 }) %></div>
+      <h1>Admin Login</h1>
+      <p class="sub">Restricted access. Authorized administrators only.</p>
+
+      <% if (error) { %>
+        <div class="alert alert-error"><%= error %></div>
+      <% } %>
+
+      <form action="/admin/login" method="POST" data-loading-text="Signing in...">
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <input class="form-input" type="text" id="username" name="username" autocomplete="username" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-input" type="password" id="password" name="password" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <span class="btn-label">Sign In</span>
+          <span class="spinner"></span>
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <%- include('../partials/toast-container') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../partials/head') %>
+</head>
+<body>
+  <%- include('../../partials/nav', { activePage: 'admin' }) %>
+
+  <div class="admin-shell">
+    <%- include('../../partials/admin-sidebar', { activeSection: 'updates' }) %>
+
+    <main class="admin-main">
+      <div class="admin-page-header">
+        <h1><%= update && update.id ? 'Edit Update' : 'Create Update' %></h1>
+        <a href="/admin/updates" class="btn btn-ghost btn-sm">&larr; Back to Updates</a>
+      </div>
+
+      <% if (errors && errors.length > 0) { %>
+        <div class="alert alert-error">
+          <% errors.forEach(e => { %><div><%= e.msg %></div><% }) %>
+        </div>
+      <% } %>
+
+      <form action="<%= update && update.id ? `/admin/updates/${update.id}/edit` : '/admin/updates/create' %>" method="POST" data-loading-text="Saving..." style="max-width:640px;">
+        <div class="form-group">
+          <label class="form-label" for="title">Title</label>
+          <input class="form-input" type="text" id="title" name="title" value="<%= update ? update.title || '' : '' %>" placeholder="Kitty v1.4.0 Released" required />
+        </div>
+
+        <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <label class="form-label" for="version">Kitty Version</label>
+            <input class="form-input" type="text" id="version" name="version" value="<%= update ? update.version || '' : '' %>" placeholder="1.4.0" required />
+          </div>
+          <div>
+            <label class="form-label" for="robloxVersion">Roblox Version</label>
+            <input class="form-input" type="text" id="robloxVersion" name="robloxVersion" value="<%= update ? update.robloxVersion || '' : '' %>" placeholder="x.x.x" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="shortDescription">Short Description</label>
+          <input class="form-input" type="text" id="shortDescription" name="shortDescription" value="<%= update ? update.shortDescription || '' : '' %>" placeholder="Shown on update cards" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="description">Full Description</label>
+          <textarea class="form-textarea" id="description" name="description" rows="5" required><%= update ? update.description || '' : '' %></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="changes">What Changed (one per line)</label>
+          <textarea class="form-textarea" id="changes" name="changes" rows="5" placeholder="Added new feature&#10;Improved performance&#10;Fixed UI issue"><%= update ? update.changes || '' : '' %></textarea>
+          <p class="form-hint">Each line becomes one bullet in the "What Changed" list.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="imageUrl">Image / Thumbnail URL (optional)</label>
+          <input class="form-input" type="text" id="imageUrl" name="imageUrl" value="<%= update ? update.imageUrl || '' : '' %>" placeholder="https://..." />
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <span class="btn-label"><%= update && update.id ? 'Save Changes' : 'Create Update' %></span>
+          <span class="spinner"></span>
+        </button>
+      </form>
+    </main>
+  </div>
+
+  <%- include('../../partials/toast-container') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

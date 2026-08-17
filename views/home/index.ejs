@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav', { activePage: 'home' }) %>
+
+  <main>
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <span class="hero-badge"><span class="dot"></span> Now live</span>
+      <h1>Kitty</h1>
+      <p class="lead">A clean, modern product built for speed, reliability, and a community that grows with it.</p>
+      <div class="hero-actions">
+        <% if (!locals.user) { %>
+          <a href="/auth/discord" class="btn btn-primary" data-loading-text="Connecting...">
+            <span class="btn-label">Continue with Discord</span>
+            <span class="spinner"></span>
+          </a>
+        <% } else { %>
+          <a href="/download" class="btn btn-primary" data-loading-text="Downloading...">Download</a>
+        <% } %>
+        <a href="/features" class="btn btn-secondary">Explore Features</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <span class="section-eyebrow">Why Kitty</span>
+        <h2>Built to feel effortless</h2>
+        <p>A focused set of features, designed around a fast and secure core.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon"><%- include('../partials/icon', { name: 'zap' }) %></div>
+          <h3>Fast Performance</h3>
+          <p>Kitty is designed to stay lightweight and responsive.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon"><%- include('../partials/icon', { name: 'shield' }) %></div>
+          <h3>Secure Authentication</h3>
+          <p>Discord-based authentication keeps accounts tied to verified users.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon"><%- include('../partials/icon', { name: 'radio' }) %></div>
+          <h3>Live Update System</h3>
+          <p>See the latest Kitty releases and changes the moment they go live.</p>
+        </div>
+      </div>
+    </section>
+
+    <% if (latestUpdates.length > 0) { %>
+    <section class="section">
+      <div class="section-header">
+        <span class="section-eyebrow">What's new</span>
+        <h2>Latest Updates</h2>
+        <p>Recent releases, straight from the Kitty team.</p>
+      </div>
+      <div class="grid">
+        <% latestUpdates.forEach(update => { %>
+          <a href="/updates/<%= update.id %>" class="update-card">
+            <div class="update-card-top">
+              <h3><%= update.title %></h3>
+              <span class="update-version-badge">v<%= update.version %></span>
+            </div>
+            <p class="desc"><%= update.shortDescription %></p>
+            <div class="update-meta">
+              <span><%= new Date(update.publishedAt || update.createdAt).toLocaleDateString() %></span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    </section>
+    <% } %>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <%- include('../partials/toast-container') %>
+
+  <% if (loggedOut) { %>
+    <div data-toast data-toast-title="Signed out" data-toast-body="You've been logged out successfully." data-toast-type="success" style="display:none"></div>
+  <% } %>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

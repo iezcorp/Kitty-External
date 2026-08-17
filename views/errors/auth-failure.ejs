@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="error-shell">
+    <div>
+      <div class="auth-icon" style="margin:0 auto 20px;color:var(--danger);"><%- include('../partials/icon', { name: 'alert-triangle', size: 24 }) %></div>
+      <h1><%= title || 'Discord Authorization Failed' %></h1>
+      <p><%= message || 'Something went wrong while connecting your Discord account.' %></p>
+      <a href="/auth/discord" class="btn btn-primary">Try Again</a>
+    </div>
+  </main>
+  <%- include('../partials/toast-container') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

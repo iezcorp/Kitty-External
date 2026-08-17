@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../partials/head') %>
+</head>
+<body>
+  <%- include('../../partials/nav', { activePage: 'admin' }) %>
+
+  <div class="admin-shell">
+    <%- include('../../partials/admin-sidebar', { activeSection: 'updates' }) %>
+
+    <main class="admin-main">
+      <div class="admin-page-header">
+        <h1>Updates</h1>
+        <a href="/admin/updates/create" class="btn btn-primary btn-sm">+ Create Update</a>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Title</th><th>Version</th><th>Status</th><th>Created</th><th></th></tr>
+          </thead>
+          <tbody>
+            <% if (updates.length === 0) { %>
+              <tr><td colspan="5" style="color:var(--text-muted);">No updates yet. Create your first one.</td></tr>
+            <% } %>
+            <% updates.forEach(u => { %>
+              <tr data-row-id="<%= u.id %>">
+                <td><%= u.title %></td>
+                <td>v<%= u.version %></td>
+                <td>
+                  <% if (u.published) { %>
+                    <span class="status-pill status-published">Published</span>
+                  <% } else { %>
+                    <span class="status-pill status-draft">Draft</span>
+                  <% } %>
+                </td>
+                <td><%= new Date(u.createdAt).toLocaleDateString() %></td>
+                <td>
+                  <div class="table-actions">
+                    <a href="/admin/updates/<%= u.id %>/edit" class="btn btn-ghost btn-sm">Edit</a>
+                    <% if (u.published) { %>
+                      <button class="btn btn-secondary btn-sm" data-action="unpublish" data-id="<%= u.id %>">Unpublish</button>
+                    <% } else { %>
+                      <button class="btn btn-secondary btn-sm" data-action="publish" data-id="<%= u.id %>">Publish</button>
+                    <% } %>
+                    <button class="btn btn-danger btn-sm" data-action="delete" data-id="<%= u.id %>">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <%- include('../../partials/toast-container') %>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/admin-updates.js"></script>
+</body>
+</html>

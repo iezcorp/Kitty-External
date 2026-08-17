@@ -1,0 +1,36 @@
+<header class="nav">
+  <div class="nav-inner">
+    <a href="/" class="brand">
+      <img src="/images/logo.png" alt="Kitty logo" class="brand-mark" />
+      <span class="brand-name">Kitty</span>
+    </a>
+
+    <nav class="nav-links" id="nav-links">
+      <a href="/" class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'home' ? 'active' : '' %>">Home</a>
+      <a href="/features" class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'features' ? 'active' : '' %>">Features</a>
+      <a href="/updates" class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'updates' ? 'active' : '' %>">Live Updates</a>
+      <% if (locals.user) { %>
+        <a href="/download" class="nav-link">Download</a>
+      <% } else { %>
+        <a href="/auth/discord" class="nav-link">Login</a>
+      <% } %>
+      <% if (locals.isAdmin) { %>
+        <a href="/admin" class="nav-link nav-link-admin">Admin Dashboard</a>
+      <% } %>
+    </nav>
+
+    <div class="nav-actions">
+      <% if (locals.user) { %>
+        <a href="/account" class="nav-user">
+          <img src="<%= user.avatar %>" alt="" class="nav-avatar" />
+          <span><%= user.displayName %></span>
+        </a>
+      <% } else { %>
+        <a href="/auth/discord" class="btn btn-primary btn-sm">Continue with Discord</a>
+      <% } %>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>

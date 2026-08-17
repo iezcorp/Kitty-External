@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav', { activePage: 'updates' }) %>
+
+  <main>
+    <section class="section" style="padding-top:80px;">
+      <div class="section-header">
+        <span class="section-eyebrow">Changelog</span>
+        <h2>Live Updates</h2>
+        <p>Every Kitty release, published in real time by the team.</p>
+      </div>
+
+      <div class="update-list" id="update-list" style="max-width:760px;margin:0 auto;">
+        <% if (updates.length === 0) { %>
+          <div class="empty-state" id="empty-state">
+            <h3>No updates yet</h3>
+            <p>Check back soon — new releases will appear here the moment they're published.</p>
+          </div>
+        <% } %>
+        <% updates.forEach(update => { %>
+          <a href="/updates/<%= update.id %>" class="update-card" data-update-id="<%= update.id %>">
+            <div class="update-card-top">
+              <h3><%= update.title %></h3>
+              <span class="update-version-badge">v<%= update.version %></span>
+            </div>
+            <p class="desc"><%= update.shortDescription %></p>
+            <div class="update-meta">
+              <span><%= new Date(update.publishedAt || update.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+              <% if (update.robloxVersion) { %><span>Roblox <%= update.robloxVersion %></span><% } %>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <%- include('../partials/toast-container') %>
+  <script src="/js/main.js"></script>
+  <script src="/js/live-updates.js"></script>
+</body>
+</html>

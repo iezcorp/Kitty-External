@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav', { activePage: 'admin' }) %>
+
+  <div class="admin-shell">
+    <%- include('../partials/admin-sidebar', { activeSection: 'downloads' }) %>
+
+    <main class="admin-main">
+      <div class="admin-page-header">
+        <h1>Downloads</h1>
+      </div>
+      <p style="color:var(--text-muted);margin:-8px 0 24px;font-size:14px;">Users get the newest uploaded file when they click "Download". Older files stay listed until you remove them.</p>
+
+      <% if (message) { %>
+        <div class="alert alert-success"><%= message %></div>
+      <% } %>
+      <% if (error) { %>
+        <div class="alert alert-error"><%= error %></div>
+      <% } %>
+
+      <div style="max-width:640px;margin-bottom:32px;">
+        <form action="/admin/downloads/upload" method="POST" enctype="multipart/form-data" data-loading-text="Uploading...">
+          <div class="form-group">
+            <label class="form-label" for="file">Upload New Build</label>
+            <input class="form-input" type="file" id="file" name="file" accept=".zip" required style="padding:10px;" />
+            <p class="form-hint">Only .zip files, up to 250MB. Uploading makes it the active download instantly.</p>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <span class="btn-label">Upload File</span>
+            <span class="spinner"></span>
+          </button>
+        </form>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Size</th>
+              <th>Uploaded</th>
+              <th>Status</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (files.length === 0) { %>
+              <tr><td colspan="5" style="color:var(--text-muted);">No files yet. Upload your first build above.</td></tr>
+            <% } else { %>
+              <% files.forEach(file => { %>
+                <tr>
+                  <td><strong><%= file.name %></strong></td>
+                  <td><%= (file.size / 1048576).toFixed(2) %> MB</td>
+                  <td><%= new Date(file.mtime).toLocaleString() %></td>
+                  <td>
+                    <% if (file.name === current) { %>
+                      <span class="badge badge-verified"><%- include('../partials/icon', { name: 'check', size: 14 }) %> Live now</span>
+                    <% } else { %>
+                      <span style="color:var(--text-muted);">Old version</span>
+                    <% } %>
+                  </td>
+                  <td style="text-align:right;">
+                    <form action="/admin/downloads/<%= encodeURIComponent(file.name) %>/delete" method="POST" onsubmit="return confirm('Delete <%= file.name %>? Users will no longer get it.');">
+                      <button type="submit" class="btn btn-ghost btn-sm" style="color:#e5484d;">
+                        <%- include('../partials/icon', { name: 'trash', size: 14 }) %> Remove
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <%- include('../partials/toast-container') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/nav', { activePage: 'admin' }) %>
+
+  <div class="admin-shell">
+    <%- include('../partials/admin-sidebar', { activeSection: 'overview' }) %>
+
+    <main class="admin-main">
+      <div class="admin-page-header">
+        <h1>Overview</h1>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value"><%= stats.totalUsers %></div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value"><%= stats.totalUpdates %></div>
+          <div class="stat-label">Total Updates</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value"><%= stats.latestUpdate ? ('v' + stats.latestUpdate.version) : '—' %></div>
+          <div class="stat-label">Latest Published Update</div>
+        </div>
+      </div>
+
+      <div class="admin-page-header">
+        <h1 style="font-size:18px;">Recently Registered Users</h1>
+      </div>
+      <div class="table-wrap" style="margin-bottom:36px;">
+        <table>
+          <thead><tr><th>Username</th><th>Discord ID</th><th>Joined</th></tr></thead>
+          <tbody>
+            <% if (recentUsers.length === 0) { %>
+              <tr><td colspan="3" style="color:var(--text-muted);">No users yet.</td></tr>
+            <% } %>
+            <% recentUsers.forEach(u => { %>
+              <tr>
+                <td><%= u.displayName %></td>
+                <td><%= u.discordId %></td>
+                <td><%= new Date(u.createdAt).toLocaleDateString() %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="admin-page-header">
+        <h1 style="font-size:18px;">Recently Published/Drafted Updates</h1>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Title</th><th>Version</th><th>Status</th></tr></thead>
+          <tbody>
+            <% if (recentUpdates.length === 0) { %>
+              <tr><td colspan="3" style="color:var(--text-muted);">No updates yet.</td></tr>
+            <% } %>
+            <% recentUpdates.forEach(u => { %>
+              <tr>
+                <td><%= u.title %></td>
+                <td>v<%= u.version %></td>
+                <td>
+                  <% if (u.published) { %>
+                    <span class="status-pill status-published">Published</span>
+                  <% } else { %>
+                    <span class="status-pill status-draft">Draft</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <%- include('../partials/toast-container') %>
+
+  <% if (welcome) { %>
+    <div data-toast data-toast-title="Welcome, <%= adminUsername %>" data-toast-type="success" style="display:none"></div>
+  <% } %>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>
